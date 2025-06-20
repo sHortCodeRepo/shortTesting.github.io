@@ -60,6 +60,12 @@
         color: #F44336; /* Red for error message */
         font-weight: bold;
       }
+      .info-message {
+        margin-top: 20px;
+        font-size: 1.1em;
+        color: #2196F3; /* Blue for info message */
+        font-weight: bold;
+      }
     </style>
   </head>
 
@@ -69,8 +75,8 @@
       <footer>— Peter Drucker</footer>
     </div>
 
-    <div id="statusMessage" class="test-message">
-      Attempting to set Glia custom attribute...
+    <div id="statusMessage" class="info-message">
+      Waiting for Glia SDK to load...
     </div>
 
     <div class="links-row">
@@ -79,12 +85,16 @@
       <a href="pagewithappinsidetheurl.html">Go to App Page</a>
     </div>
 
-    <!-- Glia API Call for Testing -->
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const statusMessageElement = document.getElementById('statusMessage');
+      const statusMessageElement = document.getElementById('statusMessage');
+      let attempts = 0;
+      const maxAttempts = 50; // Try for up to 5 seconds (50 * 100ms)
 
+      function tryGliaApiCall() {
         if (typeof sm !== 'undefined' && sm.getApi) {
+            statusMessageElement.textContent = 'Glia SDK loaded. Attempting to set custom attribute...';
+            statusMessageElement.className = 'info-message';
+
             sm.getApi({version: 'v1'}).then(function(glia) {
                 glia.updateInformation({
                   customAttributesUpdateMethod: 'merge',
@@ -96,27 +106,36 @@
                   statusMessageElement.className = 'test-message'; // Ensure green color for success
                   console.log('Glia custom attribute "customerSegment" set to "VIP" successfully!');
                 }).catch(function(error) {
-                  let errorMessage = 'Glia API error: ' + error.message;
+                  let errorMessage = 'Glia API error: ' + (error.message || 'Unknown error');
                   if (error.cause && error.cause.name === 'NETWORK_TIMEOUT') {
                     errorMessage = 'Glia API call timed out. Check network connection or Glia service availability.';
                   } else if (error.cause) {
-                    errorMessage += ' (Cause: ' + error.cause.message + ')';
+                    errorMessage += ' (Cause: ' + (error.cause.message || error.cause) + ')';
                   }
                   statusMessageElement.textContent = errorMessage;
                   statusMessageElement.className = 'error-message'; // Red color for error
                   console.error('Glia API error:', error);
                 });
               }).catch(function(error) {
-                statusMessageElement.textContent = 'Error getting Glia API: ' + error.message;
+                statusMessageElement.textContent = 'Error getting Glia API: ' + (error.message || 'Unknown error');
                 statusMessageElement.className = 'error-message';
                 console.error('Error getting Glia API:', error);
               });
         } else {
-            statusMessageElement.textContent = 'Glia (sm) object not found. Ensure salemove_integration.js is loaded correctly and Glia is initialized.';
-            statusMessageElement.className = 'error-message';
-            console.warn('Glia (sm) object not found. Ensure salemove_integration.js is loaded correctly.');
+            attempts++;
+            if (attempts < maxAttempts) {
+                statusMessageElement.textContent = `Waiting for Glia SDK... (Attempt ${attempts}/${maxAttempts})`;
+                setTimeout(tryGliaApiCall, 100); // Try again after 100ms
+            } else {
+                statusMessageElement.textContent = 'Glia (sm) object not found after multiple attempts. Ensure salemove_integration.js is loaded correctly and Glia is initialized.';
+                statusMessageElement.className = 'error-message';
+                console.warn('Glia (sm) object not found after multiple attempts. Ensure salemove_integration.js is loaded correctly.');
+            }
         }
-      });
+      }
+
+      // Start the polling when the DOM is ready (or directly if preferred, but DOMContentLoaded is safer)
+      document.addEventListener('DOMContentLoaded', tryGliaApiCall);
     </script>
   </body>
 </html>
