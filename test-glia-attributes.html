@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script async src="https://api.beta.glia.com/salemove_integration.js"></script>
+    <title>Glia Attribute Test Page</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f8f8f8; /* Light gray background for a clean look */
+      }
+      .quote-box {
+        border: none; /* Remove the border */
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 600px;
+        text-align: center;
+        font-style: italic;
+        color: #333; /* Darker text for better readability */
+        font-size: 1.2em; /* Slightly larger font for the quote */
+      }
+      .quote-box footer {
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #555; /* Slightly lighter color for the author */
+      }
+      .links-row {
+        margin-top: 30px;
+        display: flex;
+        gap: 20px; /* Space between links */
+      }
+      .links-row a {
+        text-decoration: none;
+        color: #7C19DD; /* Your brand color for links */
+        font-weight: bold;
+        padding: 8px 15px;
+        border: 1px solid #7C19DD;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      .links-row a:hover {
+        background-color: #7C19DD;
+        color: white;
+      }
+      .test-message {
+        margin-top: 20px;
+        font-size: 1.1em;
+        color: #4CAF50; /* Green for success message */
+        font-weight: bold;
+      }
+      .error-message {
+        margin-top: 20px;
+        font-size: 1.1em;
+        color: #F44336; /* Red for error message */
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="quote-box">
+      <p>"The best way to predict the future is to create it."</p>
+      <footer>— Peter Drucker</footer>
+    </div>
+
+    <div id="statusMessage" class="test-message">
+      Attempting to set Glia custom attribute...
+    </div>
+
+    <div class="links-row">
+      <a href="index.html">Back to Main Page</a>
+      <a href="pagedeuce.html">Go to Page Deuce</a>
+      <a href="pagewithappinsidetheurl.html">Go to App Page</a>
+    </div>
+
+    <!-- Glia API Call for Testing -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const statusMessageElement = document.getElementById('statusMessage');
+
+        if (typeof sm !== 'undefined' && sm.getApi) {
+            sm.getApi({version: 'v1'}).then(function(glia) {
+                glia.updateInformation({
+                  customAttributesUpdateMethod: 'merge',
+                  customAttributes: {
+                    customerSegment: 'VIP'
+                  }
+                }).then(function() {
+                  statusMessageElement.textContent = 'Glia custom attribute "customerSegment" set to "VIP" successfully!';
+                  statusMessageElement.className = 'test-message'; // Ensure green color for success
+                  console.log('Glia custom attribute "customerSegment" set to "VIP" successfully!');
+                }).catch(function(error) {
+                  let errorMessage = 'Glia API error: ' + error.message;
+                  if (error.cause && error.cause.name === 'NETWORK_TIMEOUT') {
+                    errorMessage = 'Glia API call timed out. Check network connection or Glia service availability.';
+                  } else if (error.cause) {
+                    errorMessage += ' (Cause: ' + error.cause.message + ')';
+                  }
+                  statusMessageElement.textContent = errorMessage;
+                  statusMessageElement.className = 'error-message'; // Red color for error
+                  console.error('Glia API error:', error);
+                });
+              }).catch(function(error) {
+                statusMessageElement.textContent = 'Error getting Glia API: ' + error.message;
+                statusMessageElement.className = 'error-message';
+                console.error('Error getting Glia API:', error);
+              });
+        } else {
+            statusMessageElement.textContent = 'Glia (sm) object not found. Ensure salemove_integration.js is loaded correctly and Glia is initialized.';
+            statusMessageElement.className = 'error-message';
+            console.warn('Glia (sm) object not found. Ensure salemove_integration.js is loaded correctly.');
+        }
+      });
+    </script>
+  </body>
+</html>
