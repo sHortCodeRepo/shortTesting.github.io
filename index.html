@@ -15,25 +15,28 @@
         margin: 0;
         background-color: #050D0A; /* Dark green/gray background */
       }
-      .quote-box {
-        border: none; /* Remove the border */
+      /* Styling for both quote and tip display boxes */
+      .quote-box, .tip-box {
+        border: none;
         padding: 20px;
         margin: 20px auto;
         max-width: 600px;
         text-align: center;
         font-style: italic;
-        color: #FFFFFF; /* White text for better readability against dark background */
-        font-size: 1.2em; /* Slightly larger font for the quote */
+        color: #FFFFFF; /* White text for readability */
+        font-size: 1.2em;
+        border-radius: 10px; /* Rounded corners for boxes */
       }
-      .quote-box footer {
+      /* Styling for footers in both boxes */
+      .quote-box footer, .tip-box footer {
         margin-top: 10px;
         font-size: 0.9em;
-        color: #DDDDDD; /* Slightly lighter white for the author */
+        color: #DDDDDD; /* Lighter white for author/source */
       }
       .links-row {
         margin-top: 30px;
         display: flex;
-        gap: 20px; /* Space between links */
+        gap: 20px;
       }
       .links-row a {
         text-decoration: none;
@@ -45,22 +48,37 @@
         transition: background-color 0.3s ease, color 0.3s ease;
       }
       .links-row a:hover {
-        background-color: #86E64A; /* Vibrant green background on hover */
+        background-color: #86E64A;
         color: #050D0A; /* Dark text on vibrant green hover */
       }
-      .quote-button {
-        background-color: #7C19DD; /* Purple background for a distinct look */
-        color: white;
+      /* General button styling */
+      .quote-button, .tip-button {
         padding: 10px 20px;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         font-size: 1em;
-        margin-top: 20px; /* Space above the button */
-        transition: background-color 0.3s ease;
+        margin-top: 20px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        font-weight: bold;
+      }
+      /* Specific styling for the 'New Quote' button */
+      .quote-button {
+        background-color: #7C19DD; /* Purple background */
+        color: white;
       }
       .quote-button:hover {
         background-color: #6B15BE; /* Darker purple on hover */
+      }
+      /* Specific styling for the 'Get a Productivity Tip' button */
+      .tip-button {
+        background-color: #86E64A; /* Vibrant green background */
+        color: #050D0A; /* Dark text on vibrant green */
+        border: 2px solid #86E64A; /* Subtle border matching background */
+      }
+      .tip-button:hover {
+        background-color: #6CB93E; /* Slightly darker green on hover */
+        color: #FFFFFF; /* White text on hover for contrast */
       }
     </style>
   </head>
@@ -73,6 +91,16 @@
 
     <button id="new-quote-button" class="quote-button">New Quote for Today</button>
 
+    <!-- New element for displaying productivity tips -->
+    <!-- Initially hidden, will show when the button is clicked -->
+    <div id="tip-display" class="tip-box" style="display: none;">
+      <p id="tip-text"></p>
+      <footer id="tip-source"></footer>
+    </div>
+
+    <!-- New button without an ID, using an onclick attribute -->
+    <button type="button" class="tip-button" onclick="displayProductivityTip()">Get a Productivity Tip</button>
+
     <div class="links-row">
       <a href="pagedeuce.html">Go to Page Deuce</a>
       <a href="pagewithappinsidetheurl.html">Go to App Page</a>
@@ -80,6 +108,7 @@
     </div>
 
     <script>
+      // Quotes for each day of the week
       const dayQuotes = {
         0: { // Sunday
           quote: "Sunday is a day of rest, unless your to-do list is still holding a grudge from Saturday. Then it's a day of highly productive panic.",
@@ -111,20 +140,83 @@
         }
       };
 
+      // Array of motivational/funny productivity tips
+      const productivityTips = [
+        {
+          tip: "The 'Pomodoro Technique' suggests 25 minutes of focused work, followed by a 5-minute break. Just remember to actually *take* the break, not just think about it.",
+          source: "Timer Enthusiast"
+        },
+        {
+          tip: "Eat the frog! Do your most dreaded task first thing in the morning. It's surprisingly delicious, metaphorically speaking.",
+          source: "Mark Twain (probably)"
+        },
+        {
+          tip: "If you have a task that takes less than two minutes, do it immediately. Unless it's 'negotiate world peace,' then maybe take a bit longer.",
+          source: "David Allen, The Productivity Guru"
+        },
+        {
+          tip: "Declutter your workspace. A tidy desk leads to a tidy mind, and fewer lost pens. Mostly the lost pens part.",
+          source: "Organization Overlord"
+        },
+        {
+          tip: "Batch similar tasks. Answer all your emails at once, make all your calls at once. Think of it as a productivity power-up, not procrastination.",
+          source: "Efficiency Expert"
+        },
+        {
+          tip: "Prioritize ruthlessly. If everything is important, then nothing is. Decide what truly moves the needle, then attack it like a caffeinated badger.",
+          source: "The Focused Force"
+        },
+        {
+          tip: "Learn to say 'no.' Your time is a valuable resource, not a communal water cooler everyone can fill up their empty buckets from.",
+          source: "Boundaries Boss"
+        },
+        {
+          tip: "Take regular breaks. Your brain isn't a machine... yet. Give it a moment to recharge, preferably with snacks.",
+          source: "Neuroscience Napper"
+        }
+      ];
+
+      /**
+       * Updates the main quote on the page based on the current day of the week.
+       * The quote is chosen from the `dayQuotes` object.
+       */
       function updateQuote() {
-        const today = new Date().getDay(); // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+        const today = new Date().getDay(); // Get current day (0=Sunday, 6=Saturday)
         const quoteElement = document.getElementById('quote-text');
         const authorElement = document.getElementById('quote-author');
 
-        const { quote, author } = dayQuotes[today];
+        const { quote, author } = dayQuotes[today]; // Destructure quote and author for the day
         quoteElement.textContent = `"${quote}"`;
         authorElement.textContent = `— ${author}`;
       }
 
-      // Add event listener to the button
+      /**
+       * Displays a random productivity tip on the page.
+       * The tip is chosen from the `productivityTips` array.
+       */
+      function displayProductivityTip() {
+        const tipDisplayElement = document.getElementById('tip-display');
+        const tipTextElement = document.getElementById('tip-text');
+        const tipSourceElement = document.getElementById('tip-source');
+
+        // Ensure the tip display box is visible
+        tipDisplayElement.style.display = 'block';
+
+        // Select a random tip from the array
+        const randomIndex = Math.floor(Math.random() * productivityTips.length);
+        const { tip, source } = productivityTips[randomIndex]; // Destructure tip and source
+
+        tipTextElement.textContent = `"${tip}"`;
+        tipSourceElement.textContent = `— ${source}`;
+      }
+
+      // Add event listener to the "New Quote for Today" button
+      // This will trigger the updateQuote function when clicked
       document.getElementById('new-quote-button').addEventListener('click', updateQuote);
 
-      // The initial quote will remain until the button is clicked.
+      // The initial quote remains on page load. The day-specific quote
+      // only appears when the 'New Quote for Today' button is pressed.
+      // The productivity tip only appears when its button is pressed.
     </script>
   </body>
 </html>
