@@ -24,14 +24,16 @@
         text-align: center;
         font-style: italic;
         color: #FFFFFF; /* White text for readability */
-        font-size: 1.2em;
+        font-size: 1.3em; /* Slightly larger font for the quote/tip */
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Subtle shadow for white text */
         border-radius: 10px; /* Rounded corners for boxes */
       }
       /* Styling for footers in both boxes */
       .quote-box footer, .tip-box footer {
         margin-top: 10px;
-        font-size: 0.9em;
-        color: #DDDDDD; /* Lighter white for author/source */
+        font-size: 1em; /* Slightly larger for author/source */
+        color: #FFFFFF; /* Pure white for author/source */
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Subtle shadow */
       }
       .links-row {
         margin-top: 30px;
@@ -61,7 +63,7 @@
         margin-top: 20px;
         transition: background-color 0.3s ease, color 0.3s ease;
         font-weight: bold;
-        /* --- NEW STYLES FOR BUTTON SIZING --- */
+        /* --- STYLES FOR BUTTON SIZING --- */
         width: 250px; /* Fixed width for all buttons */
         box-sizing: border-box; /* Include padding in the width calculation */
         text-align: center; /* Center the text within the fixed width */
@@ -79,3 +81,144 @@
         color: #050D0A; /* Dark text on vibrant green */
         border: 2px solid #86E64A; /* Subtle border matching background */
       }
+      .tip-button:hover {
+        background-color: #6CB93E; /* Slightly darker green on hover */
+        color: #FFFFFF; /* White text on hover for contrast */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="quote-box">
+      <p id="quote-text">"All too often, the rabbit hole is as deep as you have dug it."</p>
+      <footer id="quote-author">— Gary Hopkins</footer>
+    </div>
+
+    <button id="new-quote-button" class="quote-button">New Quote for Today</button>
+
+    <div id="tip-display" class="tip-box" style="display: none;">
+      <p id="tip-text"></p>
+      <footer id="tip-source"></footer>
+    </div>
+
+    <button type="button" class="tip-button" onclick="displayProductivityTip()">Get a Productivity Tip</button>
+
+    <div class="links-row">
+      <a href="pagedeuce.html">Go to Page Deuce</a>
+      <a href="pagewithappinsidetheurl.html">Go to App Page</a>
+      <a href="test-glia-attributes.html">Test Glia Attributes</a>
+    </div>
+
+    <script>
+      // Quotes for each day of the week
+      const dayQuotes = {
+        0: { // Sunday
+          quote: "Sunday is a day of rest, unless your to-do list is still holding a grudge from Saturday. Then it's a day of highly productive panic.",
+          author: "Unknown"
+        },
+        1: { // Monday
+          quote: "Monday: The only day it's acceptable to have five different existential crises before noon and still pretend you're a functioning adult.",
+          author: "Anonymous"
+        },
+        2: { // Tuesday
+          quote: "Tuesday is Monday's ugly cousin. Just when you think you've escaped, it pops up to remind you the week isn't over yet. But hey, at least it's not Wednesday!",
+          author: "Professional Procrastinator"
+        },
+        3: { // Wednesday
+          quote: "Wednesday: The midpoint where you realize you're either winning or desperately need a nap. Aim for winning, settle for coffee.",
+          author: "Midweek Motivator"
+        },
+        4: { // Thursday
+          quote: "Thursday is Friday's personal assistant, meticulously planning the arrival of the weekend. Don't disappoint it, get things done!",
+          author: "The Weekend's Hype Man"
+        },
+        5: { // Friday
+          quote: "Friday: My second favorite F-word. My first? Food, obviously. Now go forth and conquer your last few tasks before the sweet embrace of freedom!",
+          author: "Weekend Warrior"
+        },
+        6: { // Saturday
+          quote: "Saturday: A day for adventures, or at least strategically avoiding laundry. Choose wisely, for your future self will thank (or curse) you.",
+          author: "The Voice of Experience"
+        }
+      };
+
+      // Array of motivational/funny productivity tips
+      const productivityTips = [
+        {
+          tip: "The 'Pomodoro Technique' suggests 25 minutes of focused work, followed by a 5-minute break. Just remember to actually *take* the break, not just think about it.",
+          source: "Timer Enthusiast"
+        },
+        {
+          tip: "Eat the frog! Do your most dreaded task first thing in the morning. It's surprisingly delicious, metaphorically speaking.",
+          source: "Mark Twain (probably)"
+        },
+        {
+          tip: "If you have a task that takes less than two minutes, do it immediately. Unless it's 'negotiate world peace,' then maybe take a bit longer.",
+          source: "David Allen, The Productivity Guru"
+        },
+        {
+          tip: "Declutter your workspace. A tidy desk leads to a tidy mind, and fewer lost pens. Mostly the lost pens part.",
+          source: "Organization Overlord"
+        },
+        {
+          tip: "Batch similar tasks. Answer all your emails at once, make all your calls at once. Think of it as a productivity power-up, not procrastination.",
+          source: "Efficiency Expert"
+        },
+        {
+          tip: "Prioritize ruthlessly. If everything is important, then nothing is. Decide what truly moves the needle, then attack it like a caffeinated badger.",
+          source: "The Focused Force"
+        },
+        {
+          tip: "Learn to say 'no.' Your time is a valuable resource, not a communal water cooler everyone can fill up their empty buckets from.",
+          source: "Boundaries Boss"
+        },
+        {
+          tip: "Take regular breaks. Your brain isn't a machine... yet. Give it a moment to recharge, preferably with snacks.",
+          source: "Neuroscience Napper"
+        }
+      ];
+
+      /**
+       * Updates the main quote on the page based on the current day of the week.
+       * The quote is chosen from the `dayQuotes` object.
+       */
+      function updateQuote() {
+        const today = new Date().getDay(); // Get current day (0=Sunday, 6=Saturday)
+        const quoteElement = document.getElementById('quote-text');
+        const authorElement = document.getElementById('quote-author');
+
+        const { quote, author } = dayQuotes[today]; // Destructure quote and author for the day
+        quoteElement.textContent = `"${quote}"`;
+        authorElement.textContent = `— ${author}`;
+      }
+
+      /**
+       * Displays a random productivity tip on the page.
+       * The tip is chosen from the `productivityTips` array.
+       */
+      function displayProductivityTip() {
+        const tipDisplayElement = document.getElementById('tip-display');
+        const tipTextElement = document.getElementById('tip-text');
+        const tipSourceElement = document.getElementById('tip-source');
+
+        // Ensure the tip display box is visible
+        tipDisplayElement.style.display = 'block';
+
+        // Select a random tip from the array
+        const randomIndex = Math.floor(Math.random() * productivityTips.length);
+        const { tip, source } = productivityTips[randomIndex]; // Destructure tip and source
+
+        tipTextElement.textContent = `"${tip}"`;
+        tipSourceElement.textContent = `— ${source}`;
+      }
+
+      // Add event listener to the "New Quote for Today" button
+      // This will trigger the updateQuote function when clicked
+      document.getElementById('new-quote-button').addEventListener('click', updateQuote);
+
+      // The initial quote remains on page load. The day-specific quote
+      // only appears when the 'New Quote for Today' button is pressed.
+      // The productivity tip only appears when its button is pressed.
+    </script>
+  </body>
+</html>
