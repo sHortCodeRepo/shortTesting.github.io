@@ -13,7 +13,7 @@
         align-items: center;
         min-height: 100vh;
         margin: 0;
-        background-color: #f8f8f8; /* Light gray background for a clean look */
+        background-color: #050D0A; /* Dark green/gray background */
       }
       .quote-box {
         border: none; /* Remove the border */
@@ -22,13 +22,13 @@
         max-width: 600px;
         text-align: center;
         font-style: italic;
-        color: #333; /* Darker text for better readability */
+        color: #FFFFFF; /* White text for better readability against dark background */
         font-size: 1.2em; /* Slightly larger font for the quote */
       }
       .quote-box footer {
         margin-top: 10px;
         font-size: 0.9em;
-        color: #555; /* Slightly lighter color for the author */
+        color: #DDDDDD; /* Slightly lighter white for the author */
       }
       .links-row {
         margin-top: 30px;
@@ -37,33 +37,33 @@
       }
       .links-row a {
         text-decoration: none;
-        color: #7C19DD; /* Your brand color for links */
+        color: #86E64A; /* Vibrant green for links */
         font-weight: bold;
         padding: 8px 15px;
-        border: 1px solid #7C19DD;
+        border: 1px solid #86E64A;
         border-radius: 5px;
         transition: background-color 0.3s ease, color 0.3s ease;
       }
       .links-row a:hover {
-        background-color: #7C19DD;
-        color: white;
+        background-color: #86E64A; /* Vibrant green background on hover */
+        color: #050D0A; /* Dark text on vibrant green hover */
       }
       .test-message {
         margin-top: 20px;
         font-size: 1.1em;
-        color: #4CAF50; /* Green for success message */
+        color: #86E64A; /* Vibrant green for success message */
         font-weight: bold;
       }
       .error-message {
         margin-top: 20px;
         font-size: 1.1em;
-        color: #F44336; /* Red for error message */
+        color: #F44336; /* Red for error message (kept for visibility/standard) */
         font-weight: bold;
       }
       .info-message {
         margin-top: 20px;
         font-size: 1.1em;
-        color: #2196F3; /* Blue for info message */
+        color: #7C19DD; /* Purple for info message */
         font-weight: bold;
       }
     </style>
@@ -82,60 +82,4 @@
     <div class="links-row">
       <a href="index.html">Back to Main Page</a>
       <a href="pagedeuce.html">Go to Page Deuce</a>
-      <a href="pagewithappinsidetheurl.html">Go to App Page</a>
-    </div>
-
-    <script>
-      const statusMessageElement = document.getElementById('statusMessage');
-      let attempts = 0;
-      const maxAttempts = 50; // Try for up to 5 seconds (50 * 100ms)
-
-      function tryGliaApiCall() {
-        if (typeof sm !== 'undefined' && sm.getApi) {
-            statusMessageElement.textContent = 'Glia SDK loaded. Attempting to set custom attribute...';
-            statusMessageElement.className = 'info-message';
-
-            sm.getApi({version: 'v1'}).then(function(glia) {
-                glia.updateInformation({
-                  customAttributesUpdateMethod: 'merge',
-                  customAttributes: {
-                    customerSegment: 'VIP'
-                  }
-                }).then(function() {
-                  statusMessageElement.textContent = 'Glia custom attribute "customerSegment" set to "VIP" successfully!';
-                  statusMessageElement.className = 'test-message'; // Ensure green color for success
-                  console.log('Glia custom attribute "customerSegment" set to "VIP" successfully!');
-                }).catch(function(error) {
-                  let errorMessage = 'Glia API error: ' + (error.message || 'Unknown error');
-                  if (error.cause && error.cause.name === 'NETWORK_TIMEOUT') {
-                    errorMessage = 'Glia API call timed out. Check network connection or Glia service availability.';
-                  } else if (error.cause) {
-                    errorMessage += ' (Cause: ' + (error.cause.message || error.cause) + ')';
-                  }
-                  statusMessageElement.textContent = errorMessage;
-                  statusMessageElement.className = 'error-message'; // Red color for error
-                  console.error('Glia API error:', error);
-                });
-              }).catch(function(error) {
-                statusMessageElement.textContent = 'Error getting Glia API: ' + (error.message || 'Unknown error');
-                statusMessageElement.className = 'error-message';
-                console.error('Error getting Glia API:', error);
-              });
-        } else {
-            attempts++;
-            if (attempts < maxAttempts) {
-                statusMessageElement.textContent = `Waiting for Glia SDK... (Attempt ${attempts}/${maxAttempts})`;
-                setTimeout(tryGliaApiCall, 100); // Try again after 100ms
-            } else {
-                statusMessageElement.textContent = 'Glia (sm) object not found after multiple attempts. Ensure salemove_integration.js is loaded correctly and Glia is initialized.';
-                statusMessageElement.className = 'error-message';
-                console.warn('Glia (sm) object not found after multiple attempts. Ensure salemove_integration.js is loaded correctly.');
-            }
-        }
-      }
-
-      // Start the polling when the DOM is ready (or directly if preferred, but DOMContentLoaded is safer)
-      document.addEventListener('DOMContentLoaded', tryGliaApiCall);
-    </script>
-  </body>
-</html>
+      <a href="pagew
