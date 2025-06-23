@@ -48,14 +48,30 @@
         background-color: #7C19DD;
         color: white;
       }
+      .quote-button {
+        background-color: #4CAF50; /* Green background for a distinct look */
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        margin-top: 20px; /* Space above the button */
+        transition: background-color 0.3s ease;
+      }
+      .quote-button:hover {
+        background-color: #45a049; /* Darker green on hover */
+      }
     </style>
   </head>
 
   <body>
     <div class="quote-box">
-      <p>"All too often, the rabbit hole is as deep as you have dug it."</p>
-      <footer>— Gary Hopkins</footer>
+      <p id="quote-text">"All too often, the rabbit hole is as deep as you have dug it."</p>
+      <footer id="quote-author">— Gary Hopkins</footer>
     </div>
+
+    <button id="new-quote-button" class="quote-button">New Quote for Today</button>
 
     <div class="links-row">
       <a href="pagedeuce.html">Go to Page Deuce</a>
@@ -63,5 +79,53 @@
       <a href="test-glia-attributes.html">Test Glia Attributes</a>
     </div>
 
+    <script>
+      const dayQuotes = {
+        0: { // Sunday
+          quote: "Sunday is a day of rest, unless your to-do list is still holding a grudge from Saturday. Then it's a day of highly productive panic.",
+          author: "Unknown"
+        },
+        1: { // Monday
+          quote: "Monday: The only day it's acceptable to have five different existential crises before noon and still pretend you're a functioning adult.",
+          author: "Anonymous"
+        },
+        2: { // Tuesday
+          quote: "Tuesday is Monday's ugly cousin. Just when you think you've escaped, it pops up to remind you the week isn't over yet. But hey, at least it's not Wednesday!",
+          author: "Professional Procrastinator"
+        },
+        3: { // Wednesday
+          quote: "Wednesday: The midpoint where you realize you're either winning or desperately need a nap. Aim for winning, settle for coffee.",
+          author: "Midweek Motivator"
+        },
+        4: { // Thursday
+          quote: "Thursday is Friday's personal assistant, meticulously planning the arrival of the weekend. Don't disappoint it, get things done!",
+          author: "The Weekend's Hype Man"
+        },
+        5: { // Friday
+          quote: "Friday: My second favorite F-word. My first? Food, obviously. Now go forth and conquer your last few tasks before the sweet embrace of freedom!",
+          author: "Weekend Warrior"
+        },
+        6: { // Saturday
+          quote: "Saturday: A day for adventures, or at least strategically avoiding laundry. Choose wisely, for your future self will thank (or curse) you.",
+          author: "The Voice of Experience"
+        }
+      };
+
+      function updateQuote() {
+        const today = new Date().getDay(); // 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+        const quoteElement = document.getElementById('quote-text');
+        const authorElement = document.getElementById('quote-author');
+
+        const { quote, author } = dayQuotes[today];
+        quoteElement.textContent = `"${quote}"`;
+        authorElement.textContent = `— ${author}`;
+      }
+
+      // Add event listener to the button
+      document.getElementById('new-quote-button').addEventListener('click', updateQuote);
+
+      // Set the initial quote based on the current day when the page loads
+      updateQuote();
+    </script>
   </body>
 </html>
